@@ -12,12 +12,18 @@ int countCharsInLine(char *str);
 void countFrequencyInLine(char *str, int charFrequencies[LETTERS]);
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    FILE *fp = fopen("text.txt", "r");
+    
+    if (argc < 2) {
+        printf("Usage: <filename>\n");
+        exit(EXIT_FAILURE);
+    }
+
+    FILE *fp = fopen(argv[1], "r");
 
     if (!fp) {
-        fprintf(stderr, "Can't open file text.txt\n");
+        perror("Can't open file");
         exit(EXIT_FAILURE);
     }
 
