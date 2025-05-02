@@ -15,70 +15,71 @@ void countFrequencyInLine(char *str, int charFrequencies[LETTERS]);
 int main(int argc, char *argv[]) {
 
     
-    if (argc < 3) {
-        printf("Usage: <inputFileName> <outputFileName>\n");
+    if (argc < 2) {
+        printf("Usage: <fileName1> <fileName2> <fileName3>...\n");
         exit(EXIT_FAILURE);
     }
 
-    FILE *fp = fopen(argv[1], "r");
-    FILE *outputFile = fopen(argv[2], "w");
-
-    if (!fp) {
-        perror("Can't open file");
-        exit(EXIT_FAILURE);
-    }
-
+    FILE *outputFile = fopen("result.txt", "a");
     if (!outputFile) {
         perror("Can't open file");
         exit(EXIT_FAILURE);
     }
 
 
-    printf("Reading file text.txt\n");
+    for (int i = 1; i < argc; i++) {
+        FILE *fp = fopen(argv[i], "r");
 
-    char line[LINE_SIZE];
-    int linesCount = 0;
-    int wordsCount = 0;
-    int charsCount = 0;
-    int charFrequencies[LETTERS] = {0};
+        if (!fp) {
+            perror("Can't open file");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("Reading file text.txt\n");
+
+        char line[LINE_SIZE];
+        int linesCount = 0;
+        int wordsCount = 0;
+        int charsCount = 0;
+        int charFrequencies[LETTERS] = {0};
 
 
-    while (fgets(line, sizeof(line), fp)) {
-        linesCount++;
+        while (fgets(line, sizeof(line), fp)) {
+            linesCount++;
+            
+            wordsCount += countWordsInLine(line);
+            charsCount += countCharsInLine(line);
+            countFrequencyInLine(line, charFrequencies);
+            
+        }
+
+        if (!fclose(fp)) {
+            printf("File %s closed successfully\n", argv[1]);
+        } else {
+            printf("Can't close file %s\n", argv[1]);
+        }
+
+        fprintf(outputFile, "There is %d lines and %d words %d chars in the %s file\n", linesCount, wordsCount, charsCount, argv[i]);
+        fprintf(outputFile, "letters frequency: \n");
+
+        for (int i = 0; i < LETTERS; i++) {
+            fprintf(outputFile, "%3c", 'a' + i);
+        }
+        fprintf(outputFile, "\n");
+
+        for (int i = 0; i < LETTERS; i++) {
+            fprintf(outputFile, "%3d", charFrequencies[i]);
+        }
         
-        wordsCount += countWordsInLine(line);
-        charsCount += countCharsInLine(line);
-        countFrequencyInLine(line, charFrequencies);
-        
-    }
+        fprintf(outputFile, "\n");
 
-    if (!fclose(fp)) {
-        printf("File %s closed successfully\n", argv[1]);
-    } else {
-        printf("Can't close file %s\n", argv[1]);
-    }
-
-
-    fprintf(outputFile, "There is %d lines and %d words %d chars in the text.txt file\n", linesCount, wordsCount, charsCount);
-    fprintf(outputFile, "letters frequency: \n");
-
-    for (int i = 0; i < LETTERS; i++) {
-        fprintf(outputFile, "%3c", 'a' + i);
-    }
-    fprintf(outputFile, "\n");
-
-    for (int i = 0; i < LETTERS; i++) {
-        fprintf(outputFile, "%3d", charFrequencies[i]);
     }
     
-    fprintf(outputFile, "\n");
-
     if(!fclose(outputFile)) {
-        printf("File %s closed succesffuly\n", argv[2]);
+        printf("File %s closed succesffuly\n", "result.txt");
     } else {
-        printf("Can't close file %s\n", argv[2]);
+        printf("Can't close file %s\n", "result.txt");
     }
-    
 
     return 0;
 }
